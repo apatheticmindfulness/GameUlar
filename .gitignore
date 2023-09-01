@@ -7,8 +7,6 @@
 *.vs
 build
 intermediate
-Main.c
-Main.cpp
 Note.txt
 
 
