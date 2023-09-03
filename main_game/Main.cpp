@@ -1,3 +1,69 @@
+#ifdef _DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+
+#include "Config.h"
+#include "Game.h"
+
+int main()
+{
+	const int64_t frequency = IkiGetPerformanceFrequency();
+	int64_t startTime = IkiGetPerformanceCounter();
+	int64_t endTime = 0;
+	int64_t elapsedTime = 0;
+
+	float dt = 0.0f;
+
+	Game game;
+
+	IkiCreateWindow("Map test", WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	IkiUseBasicGraphics(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, 32, false);
+
+	IkiShowWindow();
+
+	UpdateWindow((HWND)IkiGetWindowHandle());
+
+	game.Initialize();
+
+	while (IkiRunProcess())
+	{
+		game.Update(dt);
+
+		IkiRenderStart();
+		game.Draw();
+		IkiRenderEnd();
+
+		// Time stuff
+		endTime = IkiGetPerformanceCounter();
+		elapsedTime = endTime - startTime;
+		elapsedTime *= 1000000; // Converts to microseconds to guard againts loss-of-precision
+		elapsedTime /= frequency; // (microseconds per frame)
+
+		float millisecondsPerFrame = elapsedTime * (1.0f / 1000.0f);
+		float secondsPerFrame = millisecondsPerFrame * (1.0f / 1000.0f);
+
+		dt = secondsPerFrame;
+
+		startTime = endTime;
+
+		Sleep(1);
+	}
+
+	game.End();
+
+#ifdef _DEBUG
+	_CrtDumpMemoryLeaks();
+#endif
+
+
+	return 0;
+}
+
+
+#if 0
 #include "iki_window.h"
 #include "iki_basic_graphics.h"
 #include "iki_time.h"
@@ -11,6 +77,8 @@
 
 #include "Utils.h"
 #include "Snake.h"
+
+#include <malloc.h>
 
 #define PI 3.14159
 #define TO_DEGREE (180.0f / (float)PI)
@@ -33,12 +101,6 @@ typedef struct
 	Vector2Int pos;
 	RECT rect;
 } Food;
-
-void Swap(float* x, float* y);
-
-void DrawLine(float x0, float y0, float x1, float y1, iki_color color);
-
-void DrawRect(RECT rect, iki_color color);
 
 int main()
 {
@@ -278,78 +340,8 @@ int main()
 
 		Sleep(1);
 	}
+
+
+	return 0;
 }
-
-void Swap(float* x, float* y)
-{
-	float temp = *x;
-	*x = *y;
-	*y = temp;
-}
-
-void DrawLine(float x0, float y0, float x1, float y1, iki_color color)
-{
-	float xStart = x0;
-	float xEnd = x1;
-
-	float yStart = y0;
-	float yEnd = y1;
-
-	float m = 0.0f;
-
-	if (xStart != xEnd)
-	{
-		m = (yEnd - yStart) / (xEnd - xStart);
-	}
-
-	float b = y0 - m * x0;
-
-	if (xStart > xEnd)
-	{
-		Swap(&xStart, &xEnd);
-	}
-
-	if (abs((int)m) < 1.0f && xStart != xEnd)
-	{
-		for (int x = (int)xStart; x < (int)xEnd; ++x)
-		{
-			const float y = (m * x) + b;
-
-			IkiSetPixel(x, (int)y, color);
-		}
-	}
-	else
-	{
-		float w = (x1 - x0) / (y1 - y0);
-		float p = x0 - w * y0;
-
-		if (yStart > yEnd)
-		{
-			Swap(&yStart, &yEnd);
-		}
-
-		for (int y = (int)yStart; y < (int)yEnd; ++y)
-		{
-			float x = (w * (float)y) + p;
-			IkiSetPixel((int)x, y, color);
-		}
-	}
-
-}
-
-void DrawRect(RECT rect, iki_color color)
-{
-	//int bottom = rect.top + rect.bottom;
-	//int right = rect.left + rect.right;
-	//
-	//for (int y = rect.top; y < bottom; ++y)
-	//{
-	//	for (int x = rect.left; x < right; ++x)
-	//	{
-	//		IkiSetPixel(x, y, color);
-	//	}
-	//}
-
-	DrawRectCR(rect, { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT }, color);
-}
-
+#endif

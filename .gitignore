@@ -4,6 +4,7 @@
 *.filters
 *.user
 *.vs
+backup
 build
 intermediate
 Note.txt

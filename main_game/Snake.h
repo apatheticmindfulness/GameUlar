@@ -1,16 +1,67 @@
 #pragma once
 
 #include "Utils.h"
+#include "Map.h"
 
-typedef struct Snake_T
+struct Snake
 {
-	int maxBody;
-
 	bool isHead;
 	bool isBody;
 	iki_color color;
-
 	Vector2Int pos;
 	Vector2Int direction;
 	RECT rect;
-} Snake;
+};
+
+enum SnakeMovement
+{
+	MOVE_RIGHT,
+	MOVE_LEFT,
+	MOVE_UP,
+	MOVE_DOWN,
+	MOVE_NONE
+};
+
+struct SnakeContainer
+{
+public:
+	SnakeContainer(const int maxBody);
+	~SnakeContainer();
+
+	void InitializeHead(const Vector2Int startPosition, 
+						const Vector2Int startDirection,
+						const iki_color color);
+
+	void FreeSnakeContainer();
+
+	bool IsHeadInitialized() const;
+	Vector2Int GetPosition() const;
+
+	int GetLength() const;
+	Snake * GetSnakes() const;
+
+	SnakeMovement GetDirection() const;
+
+	void Grow();
+
+
+	void MoveRight();
+	void MoveLeft();
+	void MoveUp();
+	void MoveDown();
+
+	void Update(float dt, const Map map);
+	void Draw(const Map map);
+
+private:
+	int maxBodySize;
+	int currentBodyIndex;
+	bool isHeadInitialzed;
+
+	float moveCounter;
+	float moveDuration;
+
+	SnakeMovement snakeMovement;
+	Snake * snakes;
+};
+
