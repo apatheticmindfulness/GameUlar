@@ -216,8 +216,11 @@ void Game::Draw()
 	else if (state == GAME_WIN)
 	{
 		sprintf_s((buffer), "Congratulations you've reached the maximum length of the snake %d", score);
-		MessageBox((HWND)IkiGetWindowHandle(), buffer, "You win", MB_OK);
-		state = GAME_START;
+		int message = MessageBox((HWND)IkiGetWindowHandle(), buffer, "You win", MB_OK);
+		if (message == IDOK)
+		{
+			state = GAME_START;
+		}
 	}
 	else
 	{
