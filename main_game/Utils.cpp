@@ -98,7 +98,7 @@ void DrawLine(float x0, float y0, float x1, float y1, iki_color color)
 
 }
 
-void DrawRect(RECT rect, iki_color color)
+void DrawRect(RECT rect, RECT dstRect, iki_color color)
 {
 	//int bottom = rect.top + rect.bottom;
 	//int right = rect.left + rect.right;
@@ -112,5 +112,6 @@ void DrawRect(RECT rect, iki_color color)
 	//}
 
 	// This might need to be fix
-	DrawRectCR(rect, { 0, 0, 700, 700 }, color);
+	//DrawRectCR(rect, { 0, 0, 700, 700 }, color);
+	DrawRectCR(rect, dstRect, color);
 }

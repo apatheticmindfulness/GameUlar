@@ -24,6 +24,11 @@ void SnakeContainer::InitializeHead(const Vector2Int startPosition, const Vector
 	Snake* newSnake = (Snake*)malloc(sizeof(Snake) * maxBodySize);
 	if (newSnake)
 	{
+		for (int i = 1; i < maxBodySize; ++i)
+		{
+			memset(&newSnake[i], 0, sizeof(Snake));
+		}
+
 		newSnake[0].pos = startPosition;
 		newSnake[0].direction = startDirection;
 		newSnake[0].color = color;
@@ -32,6 +37,16 @@ void SnakeContainer::InitializeHead(const Vector2Int startPosition, const Vector
 
 		isHeadInitialzed = true;
 	}
+
+	snakeMovement = MOVE_NONE;
+	currentBodyIndex = 1;
+}
+
+void SnakeContainer::SetPosition(Vector2Int position)
+{
+	assert(IsHeadInitialized());
+	snakeMovement = MOVE_NONE;
+	snakes[0].pos = position;
 }
 
 Vector2Int SnakeContainer::GetPosition() const
@@ -43,6 +58,11 @@ Vector2Int SnakeContainer::GetPosition() const
 int SnakeContainer::GetLength() const
 {
 	return currentBodyIndex;
+}
+
+int SnakeContainer::GetMaxLength() const
+{
+	return maxBodySize;
 }
 
 Snake* SnakeContainer::GetSnakes() const
@@ -84,8 +104,11 @@ void SnakeContainer::Grow()
 	}
 	else
 	{
-		snakes[currentBodyIndex].color.g += 1;
-		snakes[currentBodyIndex].color.r += 1;
+		if (snakes[currentBodyIndex].color.g < 255 && snakes[currentBodyIndex].color.r < 255)
+		{
+			snakes[currentBodyIndex].color.g += 1;
+			snakes[currentBodyIndex].color.r += 1;
+		}
 	}
 
 	snakes[currentBodyIndex].pos = snakes[currentBodyIndex - 1].pos;
@@ -120,6 +143,56 @@ void SnakeContainer::MoveDown()
 	snakeMovement = MOVE_DOWN;
 }
 
+bool SnakeContainer::CheckObstacle(const Map map) const
+{
+	assert(IsHeadInitialized());
+
+	int addX = 0;
+	int addY = 0;
+
+	if (GetDirection() == MOVE_RIGHT)
+	{
+		addX = 1;
+	}
+	else if (GetDirection() == MOVE_LEFT)
+	{
+		addX = -1;
+	}
+
+	else if (GetDirection() == MOVE_UP)
+	{
+		addY = -1;
+	}
+	else if (GetDirection() == MOVE_DOWN)
+	{
+		addY = 1;
+	}
+
+	Vector2Int collider = { 0 };
+	collider.x = snakes[0].pos.x;
+	collider.y = snakes[0].pos.y;
+
+	// Check if the snake's head is hitting its own a part of its body
+	for (int i = 2; i < GetLength(); ++i)
+	{
+		if (collider.x == snakes[i].pos.x &&
+			collider.y == snakes[i].pos.y)
+		{
+			return true;
+		}
+	}
+
+	if (GetPosition().x == 0 || 
+		GetPosition().y == 0 || 
+		GetPosition().x == (map.GetWidth() - 1) || 
+		GetPosition().y == (map.GetHeight() - 1))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 void SnakeContainer::Update(float dt, const Map map)
 {
 	assert(IsHeadInitialized());
@@ -127,7 +200,7 @@ void SnakeContainer::Update(float dt, const Map map)
 	moveCounter += dt;
 	while (moveCounter > moveDuration)
 	{
-		for (int i = currentBodyIndex - 1; i > 0; --i)
+		for (int i = GetLength() - 1; i > 0; --i)
 		{
 			int previousX = snakes[i - 1].pos.x;
 			int previousY = snakes[i - 1].pos.y;
@@ -166,10 +239,10 @@ void SnakeContainer::Draw(const Map map)
 {
 	assert(IsHeadInitialized());
 
-	for (int i = 1; i < currentBodyIndex; ++i)
+	for (int i = 1; i < GetLength(); ++i)
 	{
-		DrawRect(snakes[i].rect, snakes[i].color);
+		DrawRect(snakes[i].rect, {0, 0, CANVAS_WIDTH, CANVAS_HEIGHT}, snakes[i].color);
 	}
 
-	DrawRect(snakes[0].rect, snakes[0].color);
+	DrawRect(snakes[0].rect, {0, 0, CANVAS_WIDTH, CANVAS_HEIGHT}, snakes[0].color);
 }

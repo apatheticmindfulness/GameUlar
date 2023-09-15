@@ -49,5 +49,5 @@ void Food::Update(float dt, const Map map)
 
 void Food::Draw()
 {
-    DrawRect(rect, color);
+    DrawRect(rect, {0, 0, CANVAS_WIDTH, CANVAS_HEIGHT}, color);
 }

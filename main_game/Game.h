@@ -9,6 +9,15 @@
 #include "Snake.h"
 #include "Food.h"
 
+enum GameState
+{
+	GAME_START,
+	GAME_RUNNING,
+	GAME_PAUSE,
+	GAME_OVER,
+	GAME_WIN
+};
+
 struct Game
 {
 public:
@@ -21,6 +30,9 @@ public:
 	void End();
 
 private:
+	int score;
+	GameState state;
+
 	std::random_device rd;
 	std::mt19937 seed;
 

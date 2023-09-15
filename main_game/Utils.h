@@ -14,4 +14,4 @@ void Swap(float* x, float* y);
 
 void DrawLine(float x0, float y0, float x1, float y1, iki_color color);
 
-void DrawRect(RECT rect, iki_color color);
+void DrawRect(RECT rect, RECT dstRect, iki_color color);

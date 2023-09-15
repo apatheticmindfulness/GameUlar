@@ -35,9 +35,12 @@ public:
 	void FreeSnakeContainer();
 
 	bool IsHeadInitialized() const;
+	
+	void SetPosition(Vector2Int position);
 	Vector2Int GetPosition() const;
 
 	int GetLength() const;
+	int GetMaxLength() const;
 	Snake * GetSnakes() const;
 
 	SnakeMovement GetDirection() const;
@@ -49,6 +52,8 @@ public:
 	void MoveLeft();
 	void MoveUp();
 	void MoveDown();
+
+	bool CheckObstacle(const Map map) const;
 
 	void Update(float dt, const Map map);
 	void Draw(const Map map);
