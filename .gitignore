@@ -1,13 +1,12 @@
 # Prerequisites
 *.d
-*.vcxproj
 *.filters
-*.user
 *.vs
 backup
 build
 intermediate
 Note.txt
+README.md
 
 
 # Compiled Object files
