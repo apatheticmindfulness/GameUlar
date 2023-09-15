@@ -6,7 +6,7 @@ Game::Game()
 	score(0),
 	seed(rd()),
 	map(20, 20),
-	snake(4),
+	snake(101),
 	food({5, 5}, COLOR_GREEN)
 {}
 
